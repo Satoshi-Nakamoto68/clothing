@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -13,6 +15,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { products } from "@/lib/products";
 import { notFound } from "next/navigation";
+import React, { useState } from "react";
 
 interface ProductPageProps {
   params: {
@@ -20,19 +23,21 @@ interface ProductPageProps {
   };
 }
 
-export default function ProductPage({ params }: ProductPageProps) {
-  const { id } = params;
-  
-  // Debug logging
-  console.log("Product ID:", id);
-  console.log("Available product IDs:", products.map(p => p.id));
-  
+// export default function ProductPage({ params }: ProductPageProps) {
+export default function ProductPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = React.use(params); // unwrap Promise
+  // const { id } = params
   const product = products.find((p) => p.id === id);
-  
-  console.log("Found product:", product);
+  const [selectedImage, setSelectedImage] = useState(
+    product?.image || "/placeholder.svg"
+  );
+  const [mainImage, setMainImage] = useState(selectedImage);
 
   if (!product) {
-    console.log("Product not found, calling notFound()");
     notFound();
   }
 
@@ -65,16 +70,29 @@ export default function ProductPage({ params }: ProductPageProps) {
             <div className="flex flex-col gap-2 w-20">
               {product.image_gallery?.map((image, index) => {
                 const src = image || "/placeholder.svg";
+                const isSelected = src === selectedImage;
                 return (
                   <div
                     key={index}
-                    className="aspect-square relative overflow-hidden rounded border border-slate-200 hover:border-amber-500 transition-colors"
+                    className={`aspect-square relative overflow-hidden rounded border cursor-pointer transition-colors ${
+                      isSelected
+                        ? "border-amber-600 ring-2 ring-amber-200"
+                        : "border-slate-200 hover:border-amber-500"
+                    }`}
+                    onMouseEnter={() => setMainImage(src)}
+                    onMouseLeave={() => setMainImage(selectedImage)}
+                    onClick={() => {
+                      setSelectedImage(src);
+                      setMainImage(src);
+                    }}
+                    role="button"
+                    aria-label={`Select image ${index + 1}`}
                   >
                     <Image
                       src={src}
                       alt={`${product.name} view ${index + 1}`}
                       fill
-                      className="object-cover object-center"
+                      className="object-cover object-center !w-auto !h-auto"
                     />
                   </div>
                 );
@@ -85,10 +103,10 @@ export default function ProductPage({ params }: ProductPageProps) {
             <div className="flex-1">
               <div className="aspect-square relative overflow-hidden rounded-lg">
                 <Image
-                  src={product.image}
+                  src={mainImage}
                   alt={product.name}
                   fill
-                  className="object-cover object-center"
+                  className="object-cover object-center transition-all duration-300 !w-auto !h-auto"
                 />
                 {product.isNew && (
                   <Badge className="absolute top-4 left-4 bg-amber-600">
@@ -106,15 +124,19 @@ export default function ProductPage({ params }: ProductPageProps) {
                 {product.name}
               </h1>
               <div className="flex items-center gap-4 mb-4">
-                <div className="flex items-center">
-                  <Star className="w-5 h-5 fill-amber-400 text-amber-400" />
-                  <span className="ml-1 font-medium">{product.rating}</span>
-                </div>
+                {
+                  <div className="flex items-center">
+                    <Star className="w-5 h-5 fill-amber-400 text-amber-400" />
+                    <span className="ml-1 font-medium">{product.rating}</span>
+                    {/* <span className="ml-1 text-slate-600">(127 reviews)</span> */}
+                  </div>
+                }
                 <Badge variant="outline" className="text-slate-600">
                   {product.category.charAt(0).toUpperCase() +
                     product.category.slice(1)}
                 </Badge>
               </div>
+              {/* <p className="text-3xl font-bold text-slate-900 mb-4">S${product.price}</p> */}
             </div>
 
             <div>
@@ -138,6 +160,20 @@ export default function ProductPage({ params }: ProductPageProps) {
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="space-y-3">
+              {/* <Button size="lg" className="w-full bg-slate-900 hover:bg-slate-800">
+                Contact to Order
+              </Button> */}
+              {/* <Button
+                variant="outline"
+                size="lg"
+                className="w-full bg-transparent"
+              >
+                Add to Wishlist
+              </Button> */}
             </div>
 
             {/* Trust Badges */}
@@ -176,7 +212,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                         src={relatedProduct.image || "/placeholder.svg"}
                         alt={relatedProduct.name}
                         fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        className="object-cover group-hover:scale-105 transition-transform duration-300 !w-auto !h-auto"
                       />
                     </div>
                     <CardContent className="p-4">
@@ -184,6 +220,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                         {relatedProduct.name}
                       </h3>
                       <div className="flex items-center justify-between">
+                        {/* <span className="text-lg font-bold text-slate-900">S${relatedProduct.price}</span> */}
                         <div className="flex items-center">
                           <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
                           <span className="text-sm text-slate-600 ml-1">
