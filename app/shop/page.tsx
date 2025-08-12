@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -17,7 +17,7 @@ import Link from "next/link";
 import { products } from "@/lib/products";
 import { useSearchParams, useRouter } from "next/navigation";
 
-export default function ShopPage() {
+function ShopContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
@@ -239,5 +239,40 @@ export default function ShopPage() {
         )}
       </div>
     </div>
+  );
+}
+
+function ShopLoading() {
+  return (
+    <div className="min-h-screen py-12">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold mb-4 text-slate-900">
+            Shop Collection
+          </h1>
+          <p className="text-xl text-slate-600">
+            Discover authentic American fashion imported directly to Singapore
+          </p>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {Array.from({ length: 8 }, (_, i) => (
+            <div key={i} className="animate-pulse">
+              <div className="aspect-square bg-slate-200 rounded-lg mb-4"></div>
+              <div className="h-4 bg-slate-200 rounded mb-2"></div>
+              <div className="h-3 bg-slate-200 rounded mb-2"></div>
+              <div className="h-3 bg-slate-200 rounded w-1/2"></div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function ShopPage() {
+  return (
+    <Suspense fallback={<ShopLoading />}>
+      <ShopContent />
+    </Suspense>
   );
 }

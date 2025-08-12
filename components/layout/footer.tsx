@@ -14,14 +14,14 @@ export function Footer() {
                 <span className="text-sm font-bold">A</span>
               </div> */}
               <Image
-                src="/logo_1.png"
+                src="/Anteres-Unlimited-logo.png"
                 alt="Anteres Unlimited Logo"
                 width={300}
                 height={300}
-                className="h-16 w-auto object-contain"
+                className="h-16 w-auto object-contain bg-white"
                 priority
               />
-              <span className="font-bold">Anteres Unlimited</span>
+              {/* <span className="font-bold">Anteres Unlimited</span> */}
             </div>
             <p className="text-slate-300 text-sm">
               Authentic American fashion imported directly to Singapore. Established 2024.

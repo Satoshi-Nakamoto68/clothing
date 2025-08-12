@@ -80,16 +80,16 @@ export function Header() {
           {/* Logo */}
           <Link href="/" className="flex items-center">
             <Image
-              src="/logo_1.png"
+              src="/Anteres-Unlimited-logo.png"
               alt="Anteres Unlimited Logo"
               width={300}
               height={300}
               className="h-16 w-auto object-contain"
               priority
             />
-            <span className="hidden font-bold sm:inline-block">
+            {/* <span className="hidden font-bold sm:inline-block">
               Anteres Unlimited
-            </span>
+            </span> */}
           </Link>
 
           {/* Desktop Navigation */}
