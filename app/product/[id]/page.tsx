@@ -32,9 +32,10 @@ export default function ProductPage({
   const { id } = React.use(params); // unwrap Promise
   // const { id } = params
   const product = products.find((p) => p.id === id);
-  const [mainImage, setMainImage] = useState(
+  const [selectedImage, setSelectedImage] = useState(
     product?.image || "/placeholder.svg"
   );
+  const [mainImage, setMainImage] = useState(selectedImage);
 
   if (!product) {
     notFound();
@@ -67,23 +68,35 @@ export default function ProductPage({
           <div className="flex gap-4">
             {/* Gallery Images - Left Side */}
             <div className="flex flex-col gap-2 w-20">
-              {product.image_gallery?.map((image, index) => (
-                <div
-                  key={index}
-                  className="aspect-square relative overflow-hidden rounded border cursor-pointer hover:border-amber-500 transition-colors"
-                  onMouseEnter={() => setMainImage(image || "/placeholder.svg")}
-                  onMouseLeave={() =>
-                    setMainImage(product.image || "/placeholder.svg")
-                  }
-                >
-                  <Image
-                    src={image || "/placeholder.svg"}
-                    alt={`${product.name} view ${index + 1}`}
-                    fill
-                    className="object-cover object-center"
-                  />
-                </div>
-              ))}
+              {product.image_gallery?.map((image, index) => {
+                const src = image || "/placeholder.svg";
+                const isSelected = src === selectedImage;
+                return (
+                  <div
+                    key={index}
+                    className={`aspect-square relative overflow-hidden rounded border cursor-pointer transition-colors ${
+                      isSelected
+                        ? "border-amber-600 ring-2 ring-amber-200"
+                        : "border-slate-200 hover:border-amber-500"
+                    }`}
+                    onMouseEnter={() => setMainImage(src)}
+                    onMouseLeave={() => setMainImage(selectedImage)}
+                    onClick={() => {
+                      setSelectedImage(src);
+                      setMainImage(src);
+                    }}
+                    role="button"
+                    aria-label={`Select image ${index + 1}`}
+                  >
+                    <Image
+                      src={src}
+                      alt={`${product.name} view ${index + 1}`}
+                      fill
+                      className="object-cover object-center !w-auto !h-auto"
+                    />
+                  </div>
+                );
+              })}
             </div>
 
             {/* Main Product Image - Right Side */}
@@ -93,7 +106,7 @@ export default function ProductPage({
                   src={mainImage}
                   alt={product.name}
                   fill
-                  className="object-cover object-center transition-all duration-300"
+                  className="object-cover object-center transition-all duration-300 !w-auto !h-auto"
                 />
                 {product.isNew && (
                   <Badge className="absolute top-4 left-4 bg-amber-600">
@@ -199,7 +212,7 @@ export default function ProductPage({
                         src={relatedProduct.image || "/placeholder.svg"}
                         alt={relatedProduct.name}
                         fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        className="object-cover group-hover:scale-105 transition-transform duration-300 !w-auto !h-auto"
                       />
                     </div>
                     <CardContent className="p-4">

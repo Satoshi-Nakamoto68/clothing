@@ -121,3 +121,15 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* .custom-image-class img {
+  width: auto !important;
+  height: auto !important;
+  position: static !important;
+} */
+
+/* In your globals.css */
+/* .image-auto-dimensions {
+  width: auto !important;
+  height: auto !important;
+} */

@@ -8,6 +8,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { products } from "@/lib/products";
 import { Input } from "@/components/ui/input";
+import { usePathname } from "next/navigation";
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
@@ -15,6 +16,7 @@ export function Header() {
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
 
   const navigation = [
     { name: "Home", href: "/" },
@@ -92,16 +94,27 @@ export function Header() {
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center space-x-8">
-            {navigation.map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className="text-base font-medium text-slate-700 transition-all duration-200 hover:text-slate-900 relative group"
-              >
-                {item.name}
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-slate-800 transition-all duration-200 group-hover:w-full"></span>
-              </Link>
-            ))}
+            {navigation.map((item) => {
+              const isActive = pathname === item.href;
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={`text-base font-medium transition-all duration-200 relative group ${
+                    isActive
+                      ? "text-slate-900 font-semibold"
+                      : "text-slate-700 hover:text-slate-900"
+                  }`}
+                >
+                  {item.name}
+                  <span
+                    className={`absolute bottom-0 left-0 h-0.5 bg-slate-800 transition-all duration-200 ${
+                      isActive ? "w-full" : "w-0 group-hover:w-full"
+                    }`}
+                  ></span>
+                </Link>
+              );
+            })}
           </nav>
 
           {/* Right side actions */}
@@ -209,17 +222,28 @@ export function Header() {
               </SheetTrigger>
               <SheetContent side="right" className="w-[300px] sm:w-[400px]">
                 <nav className="flex flex-col space-y-4">
-                  {navigation.map((item) => (
-                    <Link
-                      key={item.name}
-                      href={item.href}
-                      className="text-lg font-medium text-slate-700 transition-all duration-200 hover:text-slate-900 relative group"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      {item.name}
-                      <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-slate-800 transition-all duration-200 group-hover:w-full"></span>
-                    </Link>
-                  ))}
+                  {navigation.map((item) => {
+                    const isActive = pathname === item.href;
+                    return (
+                      <Link
+                        key={item.name}
+                        href={item.href}
+                        className={`text-lg font-medium transition-all duration-200 relative group ${
+                          isActive
+                            ? "text-slate-900 font-semibold"
+                            : "text-slate-700 hover:text-slate-900"
+                        }`}
+                        onClick={() => setIsOpen(false)}
+                      >
+                        {item.name}
+                        <span
+                          className={`absolute bottom-0 left-0 h-0.5 bg-slate-800 transition-all duration-200 ${
+                            isActive ? "w-full" : "w-0 group-hover:w-full"
+                          }`}
+                        ></span>
+                      </Link>
+                    );
+                  })}
                 </nav>
               </SheetContent>
             </Sheet>
