@@ -13,8 +13,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { products } from "@/lib/products";
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
-import ProductClient from "./product-client";
 
 interface ProductPageProps {
   params: {
@@ -24,9 +22,17 @@ interface ProductPageProps {
 
 export default function ProductPage({ params }: ProductPageProps) {
   const { id } = params;
+  
+  // Debug logging
+  console.log("Product ID:", id);
+  console.log("Available product IDs:", products.map(p => p.id));
+  
   const product = products.find((p) => p.id === id);
+  
+  console.log("Found product:", product);
 
   if (!product) {
+    console.log("Product not found, calling notFound()");
     notFound();
   }
 
@@ -52,40 +58,146 @@ export default function ProductPage({ params }: ProductPageProps) {
           </div>
         </nav>
 
-        <Suspense fallback={<ProductLoading />}>
-          <ProductClient 
-            product={product} 
-            relatedProducts={relatedProducts} 
-          />
-        </Suspense>
-      </div>
-    </div>
-  );
-}
+        <div className="grid lg:grid-cols-2 gap-12 mb-16">
+          {/* Product Images */}
+          <div className="flex gap-4">
+            {/* Gallery Images - Left Side */}
+            <div className="flex flex-col gap-2 w-20">
+              {product.image_gallery?.map((image, index) => {
+                const src = image || "/placeholder.svg";
+                return (
+                  <div
+                    key={index}
+                    className="aspect-square relative overflow-hidden rounded border border-slate-200 hover:border-amber-500 transition-colors"
+                  >
+                    <Image
+                      src={src}
+                      alt={`${product.name} view ${index + 1}`}
+                      fill
+                      className="object-cover object-center"
+                    />
+                  </div>
+                );
+              })}
+            </div>
 
-function ProductLoading() {
-  return (
-    <div className="grid lg:grid-cols-2 gap-12 mb-16">
-      <div className="flex gap-4">
-        <div className="flex flex-col gap-2 w-20">
-          {Array.from({ length: 4 }, (_, i) => (
-            <div key={i} className="aspect-square bg-slate-200 rounded animate-pulse"></div>
-          ))}
+            {/* Main Product Image - Right Side */}
+            <div className="flex-1">
+              <div className="aspect-square relative overflow-hidden rounded-lg">
+                <Image
+                  src={product.image}
+                  alt={product.name}
+                  fill
+                  className="object-cover object-center"
+                />
+                {product.isNew && (
+                  <Badge className="absolute top-4 left-4 bg-amber-600">
+                    New
+                  </Badge>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Product Details */}
+          <div className="space-y-6">
+            <div>
+              <h1 className="text-3xl font-bold mb-2 text-slate-900">
+                {product.name}
+              </h1>
+              <div className="flex items-center gap-4 mb-4">
+                <div className="flex items-center">
+                  <Star className="w-5 h-5 fill-amber-400 text-amber-400" />
+                  <span className="ml-1 font-medium">{product.rating}</span>
+                </div>
+                <Badge variant="outline" className="text-slate-600">
+                  {product.category.charAt(0).toUpperCase() +
+                    product.category.slice(1)}
+                </Badge>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="font-semibold mb-2">Description</h3>
+              <p className="text-slate-600 mb-4">{product.shortDescription}</p>
+              <p className="text-slate-600">{product.fullDescription}</p>
+            </div>
+
+            {/* Size Selection */}
+            <div>
+              <h3 className="font-semibold mb-2">Size</h3>
+              <Select>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select size" />
+                </SelectTrigger>
+                <SelectContent>
+                  {product.sizes.map((size) => (
+                    <SelectItem key={size} value={size}>
+                      {size}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Trust Badges */}
+            <div className="grid grid-cols-3 gap-4 pt-6 border-t">
+              <div className="text-center">
+                <Shield className="w-8 h-8 text-amber-600 mx-auto mb-2" />
+                <p className="text-sm font-medium">Imported from USA</p>
+              </div>
+              <div className="text-center">
+                <Truck className="w-8 h-8 text-amber-600 mx-auto mb-2" />
+                <p className="text-sm font-medium">Fast Shipping</p>
+              </div>
+              <div className="text-center">
+                <CheckCircle className="w-8 h-8 text-amber-600 mx-auto mb-2" />
+                <p className="text-sm font-medium">Authentic Quality</p>
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="flex-1">
-          <div className="aspect-square bg-slate-200 rounded-lg animate-pulse"></div>
-        </div>
-      </div>
-      <div className="space-y-6">
-        <div>
-          <div className="h-8 bg-slate-200 rounded mb-2 animate-pulse"></div>
-          <div className="h-4 bg-slate-200 rounded w-1/3 animate-pulse"></div>
-        </div>
-        <div>
-          <div className="h-6 bg-slate-200 rounded mb-2 animate-pulse"></div>
-          <div className="h-4 bg-slate-200 rounded mb-2 animate-pulse"></div>
-          <div className="h-4 bg-slate-200 rounded w-3/4 animate-pulse"></div>
-        </div>
+
+        {/* Related Products */}
+        {relatedProducts.length > 0 && (
+          <div>
+            <h2 className="text-3xl font-bold mb-8 text-slate-900">
+              Related Products
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {relatedProducts.map((relatedProduct) => (
+                <Link
+                  key={relatedProduct.id}
+                  href={`/product/${relatedProduct.id}`}
+                >
+                  <Card className="group hover:shadow-lg transition-shadow">
+                    <div className="aspect-square relative overflow-hidden">
+                      <Image
+                        src={relatedProduct.image || "/placeholder.svg"}
+                        alt={relatedProduct.name}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                    <CardContent className="p-4">
+                      <h3 className="font-semibold mb-1 line-clamp-2">
+                        {relatedProduct.name}
+                      </h3>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                          <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                          <span className="text-sm text-slate-600 ml-1">
+                            {relatedProduct.rating}
+                          </span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
