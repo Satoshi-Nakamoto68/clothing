@@ -68,45 +68,54 @@ export default function ProductPage({
           <div className="flex gap-4">
             {/* Gallery Images - Left Side */}
             <div className="flex flex-col gap-2 w-20">
-              {product.image_gallery?.map((image, index) => {
-                const src = image || "/placeholder.svg";
-                const isSelected = src === selectedImage;
-                return (
-                  <div
-                    key={index}
-                    className={`aspect-square relative overflow-hidden rounded border cursor-pointer transition-colors ${
-                      isSelected
-                        ? "border-amber-600 ring-2 ring-amber-200"
-                        : "border-slate-200 hover:border-amber-500"
-                    }`}
-                    onMouseEnter={() => setMainImage(src)}
-                    onMouseLeave={() => setMainImage(selectedImage)}
-                    onClick={() => {
-                      setSelectedImage(src);
-                      setMainImage(src);
-                    }}
-                    role="button"
-                    aria-label={`Select image ${index + 1}`}
-                  >
-                    <Image
-                      src={src}
-                      alt={`${product.name} view ${index + 1}`}
-                      fill
-                      className="object-cover object-center !w-auto !h-auto"
-                    />
-                  </div>
-                );
-              })}
+              <div className="h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-slate-100">
+                {product.image_gallery?.map((image, index) => {
+                  const src = image || "/placeholder.svg";
+                  const isSelected = src === selectedImage;
+                  return (
+                    <div
+                      key={index}
+                      className={`aspect-square relative overflow-hidden rounded border cursor-pointer transition-colors flex-shrink-0 mb-2 ${
+                        isSelected
+                          ? "border-amber-600 ring-2 ring-amber-200"
+                          : "border-slate-200 hover:border-amber-500"
+                      }`}
+                      onMouseEnter={() => setMainImage(src)}
+                      onMouseLeave={() => setMainImage(selectedImage)}
+                      onClick={() => {
+                        setSelectedImage(src);
+                        setMainImage(src);
+                      }}
+                      role="button"
+                      aria-label={`Select image ${index + 1}`}
+                    >
+                      <Image
+                        src={src}
+                        alt={`${product.name} view ${index + 1}`}
+                        width={80}
+                        height={80}
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+              {product.image_gallery && product.image_gallery.length > 5 && (
+                <div className="text-center text-xs text-slate-500 mt-2">
+                  Scroll to see more
+                </div>
+              )}
             </div>
 
             {/* Main Product Image - Right Side */}
             <div className="flex-1">
-              <div className="aspect-square relative overflow-hidden rounded-lg">
+              <div className="relative overflow-hidden rounded-lg bg-slate-50">
                 <Image
                   src={mainImage}
                   alt={product.name}
-                  fill
-                  className="object-cover object-center transition-all duration-300 !w-auto !h-auto"
+                  width={600}
+                  height={600}
+                  className="w-full h-auto max-h-[600px] object-contain transition-all duration-300"
                 />
                 {product.isNew && (
                   <Badge className="absolute top-4 left-4 bg-amber-600">
