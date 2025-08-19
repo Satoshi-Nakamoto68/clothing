@@ -10,12 +10,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Star, Shield, Truck, CheckCircle } from "lucide-react";
+import { Star, Shield, Truck, CheckCircle, X, ChevronLeft, ChevronRight, ZoomIn } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { products } from "@/lib/products";
 import { notFound } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
 interface ProductPageProps {
   params: {
@@ -36,6 +36,13 @@ export default function ProductPage({
     product?.image || "/placeholder.svg"
   );
   const [mainImage, setMainImage] = useState(selectedImage);
+  const [isMainLoaded, setIsMainLoaded] = useState(false);
+  const thumbsRef = useRef<HTMLDivElement>(null);
+
+  // Lightbox state
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+  const [isLightboxImgLoaded, setIsLightboxImgLoaded] = useState(false);
 
   if (!product) {
     notFound();
@@ -44,6 +51,90 @@ export default function ProductPage({
   const relatedProducts = products
     .filter((p) => p.category === product.category && p.id !== product.id)
     .slice(0, 4);
+
+  // Build full gallery: main image first, then gallery images
+  const gallery = useMemo(() => {
+    const main = product?.image || "/placeholder.svg";
+    const rest = (product?.image_gallery ?? []).filter(Boolean);
+    return [main, ...rest];
+  }, [product]);
+
+  // Find the current index of the main image in gallery
+  const currentIndex = useMemo(() => {
+    const idx = gallery.findIndex((src) => src === mainImage);
+    return idx >= 0 ? idx : 0;
+  }, [gallery, mainImage]);
+
+  // Open lightbox at current image index
+  const openLightbox = () => {
+    setLightboxIndex(currentIndex);
+    setIsLightboxOpen(true);
+  };
+
+  const closeLightbox = () => setIsLightboxOpen(false);
+
+  const showPrev = () => {
+    setLightboxIndex((prev) => {
+      const next = (prev - 1 + gallery.length) % gallery.length;
+      const src = gallery[next];
+      setMainImage(src);
+      setSelectedImage(src);
+      return next;
+    });
+  };
+
+  const showNext = () => {
+    setLightboxIndex((prev) => {
+      const next = (prev + 1) % gallery.length;
+      const src = gallery[next];
+      setMainImage(src);
+      setSelectedImage(src);
+      return next;
+    });
+  };
+
+  // Keyboard controls and scroll lock for lightbox
+  useEffect(() => {
+    if (!isLightboxOpen) return;
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeLightbox();
+      if (e.key === "ArrowLeft") showPrev();
+      if (e.key === "ArrowRight") showNext();
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+
+    // lock scroll
+    const { overflow } = document.body.style;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.body.style.overflow = overflow;
+    };
+  }, [isLightboxOpen]);
+
+  // Reset main image fade on change
+  useEffect(() => {
+    setIsMainLoaded(false);
+  }, [mainImage]);
+
+  // Reset lightbox image fade on change
+  useEffect(() => {
+    setIsLightboxImgLoaded(false);
+  }, [lightboxIndex]);
+
+  // Scroll thumbnail list to active selected image
+  useEffect(() => {
+    const container = thumbsRef.current;
+    if (!container) return;
+    const nodes = Array.from(container.querySelectorAll('[data-src]')) as HTMLElement[];
+    const active = nodes.find((el) => el.dataset.src === selectedImage);
+    if (active) {
+      active.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+  }, [selectedImage]);
 
   return (
     <div className="min-h-screen py-12">
@@ -68,13 +159,14 @@ export default function ProductPage({
           <div className="flex gap-4">
             {/* Gallery Images - Left Side */}
             <div className="flex flex-col gap-2 w-20">
-              <div className="h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-slate-100">
+              <div ref={thumbsRef} className="h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-slate-100">
                 {product.image_gallery?.map((image, index) => {
                   const src = image || "/placeholder.svg";
                   const isSelected = src === selectedImage;
                   return (
                     <div
                       key={index}
+                      data-src={src}
                       className={`aspect-square relative overflow-hidden rounded border cursor-pointer transition-colors flex-shrink-0 mb-2 ${
                         isSelected
                           ? "border-amber-600 ring-2 ring-amber-200"
@@ -110,13 +202,30 @@ export default function ProductPage({
             {/* Main Product Image - Right Side */}
             <div className="flex-1">
               <div className="relative overflow-hidden rounded-lg bg-slate-50">
-                <Image
-                  src={mainImage}
-                  alt={product.name}
-                  width={600}
-                  height={600}
-                  className="w-full h-auto max-h-[600px] object-contain transition-all duration-300"
-                />
+                <button
+                  type="button"
+                  onClick={openLightbox}
+                  aria-label="Open image in fullscreen"
+                  className="group block w-full cursor-zoom-in"
+                  title="Click to zoom"
+                >
+                  <Image
+                    src={mainImage}
+                    alt={product.name}
+                    width={600}
+                    height={600}
+                    className={`w-full h-auto max-h-[600px] object-contain transition-opacity duration-300 ${isMainLoaded ? 'opacity-100' : 'opacity-0'}`}
+                    onLoad={() => setIsMainLoaded(true)}
+                    priority
+                  />
+                  {/* Zoom hint */}
+                  <div className="pointer-events-none absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="flex items-center gap-2 bg-black/50 text-white px-2 py-1 rounded-md text-xs">
+                      <ZoomIn className="w-4 h-4" />
+                      <span>Click to zoom</span>
+                    </div>
+                  </div>
+                </button>
                 {product.isNew && (
                   <Badge className="absolute top-4 left-4 bg-amber-600">
                     New
@@ -245,6 +354,74 @@ export default function ProductPage({
           </div>
         )}
       </div>
+
+      {/* Lightbox Modal */}
+      {isLightboxOpen && (
+        <div
+          className="fixed inset-0 z-[100] bg-black/80 flex items-center justify-center"
+          onClick={closeLightbox}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Product image viewer"
+        >
+          <div className="relative" onClick={(e) => e.stopPropagation()}>
+            {/* Image container */}
+            <div
+              className="relative w-[92vw] max-w-6xl h-[70vh] md:h-[80vh]"
+            >
+              <Image
+                src={gallery[lightboxIndex]}
+                alt={`${product.name} large view ${lightboxIndex + 1}`}
+                fill
+                className={`object-contain select-none transition-opacity duration-300 ${isLightboxImgLoaded ? 'opacity-100' : 'opacity-0'}`}
+                onLoad={() => setIsLightboxImgLoaded(true)}
+                priority
+              />
+            </div>
+
+            {/* Close button - outside, top-right of image */}
+            <button
+              type="button"
+              onClick={closeLightbox}
+              aria-label="Close viewer"
+              className="absolute top-0 right-0 -translate-y-full mr-2 p-2 rounded-full bg-black/60 text-white hover:bg-black/80 focus:outline-none cursor-pointer"
+            >
+              <X className="w-6 h-6" />
+            </button>
+
+            {/* Prev - outside, left-center of image */}
+            {gallery.length > 1 && (
+              <button
+                type="button"
+                onClick={showPrev}
+                aria-label="Previous image"
+                className="absolute left-0 top-1/2 -translate-x-full -translate-y-1/2 ml-2 p-2 rounded-full bg-black/60 text-white hover:bg-black/80 focus:outline-none cursor-pointer"
+              >
+                <ChevronLeft className="w-7 h-7" />
+              </button>
+            )}
+
+            {/* Next - outside, right-center of image */}
+            {gallery.length > 1 && (
+              <button
+                type="button"
+                onClick={showNext}
+                aria-label="Next image"
+                className="absolute right-0 top-1/2 translate-x-full -translate-y-1/2 mr-2 p-2 rounded-full bg-black/60 text-white hover:bg-black/80 focus:outline-none cursor-pointer"
+              >
+                <ChevronRight className="w-7 h-7" />
+              </button>
+            )}
+
+            {/* Counter */}
+            {gallery.length > 1 && (
+              <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-white/80 text-sm">
+                {lightboxIndex + 1} / {gallery.length}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
