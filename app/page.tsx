@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -5,14 +7,59 @@ import { CheckCircle, Truck, Shield, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { products } from "@/lib/products";
+import { useEffect, useRef, useState } from "react";
 
 export default function HomePage() {
   const featuredProducts = products.slice(0, 18);
+  const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set(['hero']));
+  const sectionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+
+  // Intersection Observer for scroll animations
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const sectionId = entry.target.getAttribute('data-section');
+            if (sectionId) {
+              setVisibleSections(prev => new Set([...prev, sectionId]));
+            }
+          }
+        });
+      },
+      {
+        threshold: 0.1,
+        rootMargin: '-50px 0px -50px 0px'
+      }
+    );
+
+    // Observe all sections
+    Object.values(sectionRefs.current).forEach((ref) => {
+      if (ref) {
+        observer.observe(ref);
+      }
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  // Helper function to set section ref
+  const setSectionRef = (sectionId: string) => (el: HTMLDivElement | null) => {
+    sectionRefs.current[sectionId] = el;
+  };
 
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-slate-900 to-slate-700 text-white py-20">
+      <section 
+        ref={setSectionRef('hero')}
+        data-section="hero"
+        className={`relative bg-gradient-to-r from-slate-900 to-slate-700 text-white py-20 transition-all duration-1000 ${
+          visibleSections.has('hero') 
+            ? 'opacity-100 translate-y-0' 
+            : 'opacity-0 translate-y-8'
+        }`}
+      >
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
@@ -43,7 +90,15 @@ export default function HomePage() {
       </section>
 
       {/* Company Introduction */}
-      <section className="py-16 bg-white">
+      <section 
+        ref={setSectionRef('company')}
+        data-section="company"
+        className={`py-16 bg-white transition-all duration-1000 delay-200 ${
+          visibleSections.has('company') 
+            ? 'opacity-100 translate-y-0' 
+            : 'opacity-0 translate-y-12'
+        }`}
+      >
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-3xl font-bold mb-6 text-slate-900">
@@ -61,7 +116,15 @@ export default function HomePage() {
       </section>
 
       {/* Featured Categories */}
-      <section className="py-16 bg-slate-50">
+      <section 
+        ref={setSectionRef('categories')}
+        data-section="categories"
+        className={`py-16 bg-slate-50 transition-all duration-1000 delay-300 ${
+          visibleSections.has('categories') 
+            ? 'opacity-100 translate-y-0' 
+            : 'opacity-0 translate-y-12'
+        }`}
+      >
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12 text-slate-900">
             Shop by Category
@@ -131,7 +194,15 @@ export default function HomePage() {
       </section>
 
       {/* Trust Section */}
-      <section className="py-16 bg-white">
+      <section 
+        ref={setSectionRef('trust')}
+        data-section="trust"
+        className={`py-16 bg-white transition-all duration-1000 delay-400 ${
+          visibleSections.has('trust') 
+            ? 'opacity-100 translate-y-0' 
+            : 'opacity-0 translate-y-12'
+        }`}
+      >
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12 text-slate-900">
             Why Choose Anteres Unlimited Clothing
@@ -178,13 +249,21 @@ export default function HomePage() {
       </section>
 
       {/* Featured Products */}
-      <section className="py-16 bg-slate-50">
+      <section 
+        ref={setSectionRef('products')}
+        data-section="products"
+        className={`py-16 bg-slate-50 transition-all duration-1000 delay-500 ${
+          visibleSections.has('products') 
+            ? 'opacity-100 translate-y-0' 
+            : 'opacity-0 translate-y-12'
+        }`}
+      >
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12 text-slate-900">
             Featured Products
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {featuredProducts.map((product) => (
+            {featuredProducts.map((product, index) => (
               <Link key={product.id} href={`/product/${product.id}`}>
                 <Card className="group hover:shadow-lg transition-shadow h-full flex flex-col">
                   <div className="h-64 relative overflow-hidden bg-slate-100">
