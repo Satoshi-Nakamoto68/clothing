@@ -1042,7 +1042,7 @@ export const products: Product[] = [
     category: "accessories",
     image: "/Canvas-Crossbody-Pouch1.jpg",
     image_gallery: [
-      "/Canvas-Crossbody-Pouch1.jpg",
+      // "/Canvas-Crossbody-Pouch1.jpg",
       "/Canvas-Crossbody-Pouch2.jpg",
       "/Canvas-Crossbody-Pouch3.jpg",
       "/Canvas-Crossbody-Pouch4.jpg",
