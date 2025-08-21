@@ -418,42 +418,110 @@ export default function ProductPage({
 
         {/* Related Products */}
         {relatedProducts.length > 0 && (
-          <div>
-            <h2 className="text-3xl font-bold mb-8 text-slate-900">
-              Related Products
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {relatedProducts.map((relatedProduct) => (
+          <div className="relative">
+            {/* Enhanced section header with decorative elements */}
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-3 mb-4">
+                <div className="w-12 h-px bg-gradient-to-r from-transparent via-amber-400 to-transparent"></div>
+                <Star className="w-5 h-5 text-amber-500 fill-amber-400" />
+                <div className="w-12 h-px bg-gradient-to-r from-transparent via-amber-400 to-transparent"></div>
+              </div>
+              <h2 className="text-4xl font-bold text-slate-900 mb-3">
+                You Might Also Like
+              </h2>
+              <p className="text-slate-600 max-w-2xl mx-auto">
+                Discover more amazing pieces from our collection that complement your style
+              </p>
+            </div>
+
+            {/* Enhanced grid layout with better spacing and animations */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 items-stretch">
+              {relatedProducts.map((relatedProduct, index) => (
                 <Link
                   key={relatedProduct.id}
                   href={`/product/${relatedProduct.id}`}
+                  className="group block h-full"
                 >
-                  <Card className="group hover:shadow-lg transition-shadow">
-                    <div className="aspect-square relative overflow-hidden">
+                  <Card className="group-hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-0 bg-gradient-to-br from-white to-slate-50/50 overflow-hidden relative h-full flex flex-col">
+                    {/* Decorative background pattern */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-amber-50/30 via-transparent to-slate-50/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    
+                    {/* Image container with enhanced hover effects */}
+                    <div className="aspect-square relative overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200">
                       <Image
                         src={relatedProduct.image || "/placeholder.svg"}
                         alt={relatedProduct.name}
                         fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-300 !w-auto !h-auto"
+                        className="object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                       />
-                    </div>
-                    <CardContent className="p-4">
-                      <h3 className="font-semibold mb-1 line-clamp-2">
-                        {relatedProduct.name}
-                      </h3>
-                      <div className="flex items-center justify-between">
-                        {/* <span className="text-lg font-bold text-slate-900">S${relatedProduct.price}</span> */}
-                        <div className="flex items-center">
-                          <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                          <span className="text-sm text-slate-600 ml-1">
+                      
+                      {/* Hover overlay with gradient */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                      
+                      {/* Quick view button */}
+                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+                        <div className="bg-white/90 backdrop-blur-sm text-slate-800 px-4 py-2 rounded-full text-sm font-medium shadow-lg border border-slate-200 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                          View Details
+                        </div>
+                      </div>
+
+                      {/* Category badge */}
+                      <div className="absolute top-3 left-3">
+                        <Badge className="bg-amber-500/90 backdrop-blur-sm text-white border-0 shadow-lg text-xs font-medium">
+                          {relatedProduct.category.charAt(0).toUpperCase() + relatedProduct.category.slice(1)}
+                        </Badge>
+                      </div>
+
+                      {/* Rating display */}
+                      <div className="absolute top-3 right-3">
+                        <div className="flex items-center gap-1 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full shadow-lg">
+                          <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+                          <span className="text-xs font-medium text-slate-800">
                             {relatedProduct.rating}
                           </span>
                         </div>
                       </div>
+                    </div>
+
+                    {/* Enhanced content with better typography and spacing */}
+                    <CardContent className="p-5 relative flex flex-col flex-1">
+                      {/* Product name with enhanced styling */}
+                      <h3 className="font-bold text-lg mb-3 text-slate-900 group-hover:text-amber-700 transition-colors duration-300 line-clamp-2 leading-tight">
+                        {relatedProduct.name}
+                      </h3>
+                      
+                      {/* Description preview */}
+                      <p className="text-slate-600 text-sm mb-4 line-clamp-2 leading-relaxed">
+                        {relatedProduct.shortDescription}
+                      </p>
+
+                      {/* Bottom section with price and action */}
+                      <div className="flex items-center justify-between pt-3 border-t border-slate-100 mt-auto">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 bg-amber-400 rounded-full animate-pulse"></div>
+                          <span className="text-xs text-slate-500 font-medium">Available</span>
+                        </div>
+                        
+                        {/* Arrow indicator */}
+                        <div className="w-8 h-8 rounded-full bg-amber-100 group-hover:bg-amber-500 transition-colors duration-300 flex items-center justify-center">
+                          <ChevronRight className="w-4 h-4 text-amber-600 group-hover:text-white transition-colors duration-300 group-hover:translate-x-0.5 transition-transform duration-300" />
+                        </div>
+                      </div>
                     </CardContent>
+
+                    {/* Hover border effect */}
+                    <div className="absolute inset-0 rounded-lg border-2 border-transparent group-hover:border-amber-300/50 transition-all duration-500 pointer-events-none" />
                   </Card>
                 </Link>
               ))}
+            </div>
+
+            {/* Call-to-action section below related products */}
+            <div className="text-center mt-12 pt-8 border-t border-slate-200">
+              <Link href={`/shop?category=${encodeURIComponent(product.category)}`} className="inline-flex items-center gap-2 text-slate-600 hover:text-amber-600 transition-colors duration-300 group">
+                <span className="font-medium">View All {product.category.charAt(0).toUpperCase() + product.category.slice(1)}</span>
+                <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+              </Link>
             </div>
           </div>
         )}
