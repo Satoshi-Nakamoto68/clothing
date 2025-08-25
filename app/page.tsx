@@ -63,10 +63,10 @@ export default function HomePage() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              Anteres Unlimited Clothing LLC
+              Define Your Style: The Best of US Streetwear.
             </h1>
             <p className="text-xl md:text-2xl mb-8 text-slate-200">
-              Authentic USA Fashion Delivered to Singapore
+              Limited collections and exclusive collaborations, shipped directly to your door in Singapore.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
@@ -100,17 +100,28 @@ export default function HomePage() {
         }`}
       >
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl font-bold mb-6 text-slate-900">
-              Premium American Fashion, Delivered to Singapore
-            </h2>
-            <p className="text-lg text-slate-600 leading-relaxed">
-              Established in 2024, Anteres Unlimited Clothing LLC is a
-              registered clothing brand specializing in importing high-quality
-              apparel directly from the USA and distributing to Singapore. We
-              bridge the gap between American fashion and Southeast Asian style,
-              ensuring authenticity and quality in every piece.
-            </p>
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            {/* Left Column: Brand Image */}
+            <div className="w-full">
+              <Image
+                src="/brand-story-image.png"
+                alt="Brand story collage representing US streetwear culture"
+                width={1600}
+                height={1067}
+                className="w-full h-auto rounded-lg object-contain"
+                priority={false}
+                sizes="(max-width: 768px) 100vw, 50vw"
+              />
+            </div>
+            {/* Right Column: Brand Story */}
+            <div className="text-left">
+              <h2 className="text-3xl font-bold mb-6 text-slate-900">
+                Born from the Streets, Built for the World.
+              </h2>
+              <p className="text-lg text-slate-600 leading-relaxed">
+                It all started with a feeling. A love for the raw energy of American streetwear—the culture, the history, the unapologetic self-expression found on the streets of Los Angeles and New York. Living in Singapore, we felt a disconnect. We saw the style, we craved the authenticity, but the real deal was always just out of reach. Anteres Unlimited Clothing was born from that desire. We're not just importers; we are curators and storytellers. We build bridges directly to the heart of the US streetwear scene, hand-picking every piece to ensure it’s 100% authentic and represents the best of the culture. Our mission is simple: to bring the world's most iconic street styles directly to you, so you can tell your own story, one authentic piece at a time.
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -216,8 +227,7 @@ export default function HomePage() {
                 Officially Registered in Ohio (2024)
               </h3>
               <p className="text-slate-600">
-                Legally established LLC with full compliance and transparency
-                for all business operations.
+                We're more than just a retailer; we're a legitimate LLC officially registered in Ohio, USA. Our American roots are your assurance that you're dealing with a real, accountable company committed to transparency. Shop with complete confidence.
               </p>
             </div>
             <div className="text-center">
@@ -228,8 +238,7 @@ export default function HomePage() {
                 Imported Directly from the USA
               </h3>
               <p className="text-slate-600">
-                Authentic American brands sourced directly from manufacturers
-                and authorized distributors.
+                We don't work with middlemen. Every item in our collection is sourced directly from official brands and authorized distributors in the USA. This direct partnership is your guarantee that every piece you receive is the real deal—no exceptions.
               </p>
             </div>
             <div className="text-center">
@@ -240,8 +249,7 @@ export default function HomePage() {
                 Fast and Reliable Shipping to Singapore
               </h3>
               <p className="text-slate-600">
-                Efficient logistics network ensuring timely delivery with full
-                tracking and insurance.
+                No long waits, no guessing games. We partner with world-class couriers like DHL and FedEx to ship your order from the US to Singapore, typically within 5-7 business days. You'll receive a tracking number the moment it ships, so you can follow its journey right to your doorstep.
               </p>
             </div>
           </div>

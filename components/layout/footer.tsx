@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { Facebook, Instagram, Twitter, Mail, Phone, MapPin } from "lucide-react"
 import Image from "next/image"
+import { AspectRatio } from "@/components/ui/aspect-ratio"
 
 export function Footer() {
   return (
@@ -97,6 +98,30 @@ export function Footer() {
                 <div className="text-slate-300">
                   <p>100 E Broad St Ste 1350</p>
                   <p>Columbus, OH 43215, USA</p>
+                </div>
+              </div>
+              {/* Map Embed */}
+              <div className="pt-4">
+                <AspectRatio ratio={16 / 9}>
+                  <iframe
+                    title="Anteres Unlimited Clothing LLC on Google Maps"
+                    src="https://www.google.com/maps?q=100+E+Broad+St+Ste+1350+Columbus,+OH+43215&output=embed"
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    className="w-full h-full rounded-md border border-slate-800"
+                    aria-label="Map showing the company's office location in Columbus, Ohio"
+                  />
+                </AspectRatio>
+                <div className="mt-2 text-right">
+                  <Link
+                    href="https://www.google.com/maps/place/100+E+Broad+St+Ste+1350,+Columbus,+OH+43215"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-slate-400 hover:text-white underline underline-offset-4"
+                    aria-label="Open our location in Google Maps"
+                  >
+                    Open in Google Maps
+                  </Link>
                 </div>
               </div>
               {/* <div className="flex items-center space-x-2">

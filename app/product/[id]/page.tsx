@@ -10,12 +10,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Star, Shield, Truck, CheckCircle, X, ChevronLeft, ChevronRight, ZoomIn, Maximize2, RotateCcw } from "lucide-react";
+import { Star, Shield, Truck, CheckCircle, X, ChevronLeft, ChevronRight, ZoomIn, Maximize2, RotateCcw, Ruler } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { products } from "@/lib/products";
 import { notFound } from "next/navigation";
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 interface ProductPageProps {
   params: {
@@ -48,6 +51,9 @@ export default function ProductPage({
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+
+  // Size Guide modal state
+  const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
 
   if (!product) {
     notFound();
@@ -384,6 +390,19 @@ export default function ProductPage({
               </Select>
             </div>
 
+            {/* Size Guide trigger */}
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={() => setIsSizeGuideOpen(true)}
+                className="mt-2 inline-flex items-center gap-2 text-slate-600 hover:text-amber-600 underline underline-offset-4 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/50 rounded"
+                aria-label="Open size guide"
+              >
+                <Ruler className="w-4 h-4" />
+                <span>Size Guide</span>
+              </button>
+            </div>
+
             {/* Action Buttons */}
             <div className="space-y-3">
               {/* <Button size="lg" className="w-full bg-slate-900 hover:bg-slate-800">
@@ -662,6 +681,124 @@ export default function ProductPage({
           </div>
         </div>
       )}
+
+      {/* Size Guide Modal */}
+      <Dialog open={isSizeGuideOpen} onOpenChange={setIsSizeGuideOpen}>
+        <DialogContent className="max-w-2xl" showCloseButton={false}>
+          {/* Visible Close Button */}
+          <DialogClose
+            aria-label="Close size guide"
+            className="absolute top-4 right-4 p-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer"
+          >
+            <X className="w-4 h-4" />
+          </DialogClose>
+          <DialogHeader>
+            <DialogTitle>Size Guide</DialogTitle>
+            <DialogDescription>
+              Find your perfect fit. All measurements are in Inches and Centimeters.
+            </DialogDescription>
+          </DialogHeader>
+
+          <Tabs defaultValue="tops" className="w-full">
+            <TabsList className="grid grid-cols-2 w-full">
+              <TabsTrigger value="tops" className="cursor-pointer">Tops</TabsTrigger>
+              <TabsTrigger value="bottoms" className="cursor-pointer">Bottoms</TabsTrigger>
+            </TabsList>
+
+            {/* Tops Tab */}
+            <TabsContent value="tops" className="mt-6 space-y-6">
+              <div>
+                <h4 className="font-semibold mb-2">How to Measure</h4>
+                <ul className="list-disc pl-5 text-slate-600 space-y-1">
+                  <li><span className="font-medium">Chest:</span> Measure around the fullest part of your chest.</li>
+                  <li><span className="font-medium">Length:</span> Measure from the highest point of the shoulder to the bottom hem.</li>
+                </ul>
+              </div>
+
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="whitespace-nowrap">Size</TableHead>
+                      <TableHead className="whitespace-nowrap">Chest (in/cm)</TableHead>
+                      <TableHead className="whitespace-nowrap">Length (in/cm)</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    <TableRow>
+                      <TableCell>S</TableCell>
+                      <TableCell>36-38 in / 91-96 cm</TableCell>
+                      <TableCell>28 in / 71 cm</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell>M</TableCell>
+                      <TableCell>39-41 in / 99-104 cm</TableCell>
+                      <TableCell>29 in / 74 cm</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell>L</TableCell>
+                      <TableCell>42-44 in / 107-112 cm</TableCell>
+                      <TableCell>30 in / 76 cm</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell>XL</TableCell>
+                      <TableCell>45-47 in / 114-119 cm</TableCell>
+                      <TableCell>31 in / 79 cm</TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </div>
+            </TabsContent>
+
+            {/* Bottoms Tab */}
+            <TabsContent value="bottoms" className="mt-6 space-y-6">
+              <div>
+                <h4 className="font-semibold mb-2">How to Measure</h4>
+                <ul className="list-disc pl-5 text-slate-600 space-y-1">
+                  <li><span className="font-medium">Waist:</span> Measure around your natural waistline.</li>
+                  <li><span className="font-medium">Inseam:</span> Measure from the crotch to the bottom of the leg.</li>
+                </ul>
+              </div>
+
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="whitespace-nowrap">Size</TableHead>
+                      <TableHead className="whitespace-nowrap">Waist (in/cm)</TableHead>
+                      <TableHead className="whitespace-nowrap">Inseam (in/cm)</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    <TableRow>
+                      <TableCell>S (30)</TableCell>
+                      <TableCell>30-31 in / 76-79 cm</TableCell>
+                      <TableCell>30 in / 76 cm</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell>M (32)</TableCell>
+                      <TableCell>32-33 in / 81-84 cm</TableCell>
+                      <TableCell>31 in / 79 cm</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell>L (34)</TableCell>
+                      <TableCell>34-35 in / 86-89 cm</TableCell>
+                      <TableCell>32 in / 81 cm</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell>XL (36)</TableCell>
+                      <TableCell>36-37 in / 91-94 cm</TableCell>
+                      <TableCell>32 in / 81 cm</TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </div>
+            </TabsContent>
+          </Tabs>
+
+          <p className="text-xs text-slate-500 mt-6">*Please note: Measurements are approximate. A variance of 1-2 cm is possible.*</p>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
