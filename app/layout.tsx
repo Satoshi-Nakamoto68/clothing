@@ -8,11 +8,10 @@ import { Footer } from "@/components/layout/footer"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Anteres Unlimited Clothing LLC - Authentic USA Fashion Delivered to Singapore",
+  title: "Anteres Unlimited Clothing LLC",
   description:
     "Premium American fashion imported directly from the USA and distributed to Singapore. Established 2024. Authentic brands, quality guaranteed.",
   keywords: "American fashion, USA clothing, Singapore fashion, authentic brands, imported clothing",
-    generator: 'v0.dev'
 }
 
 export default function RootLayout({
