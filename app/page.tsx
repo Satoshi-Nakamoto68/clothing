@@ -8,6 +8,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { products } from "@/lib/products";
 import { useEffect, useRef, useState } from "react";
+import Testimonials from "./components/Testimonials";
+import NewsletterForm from "./components/NewsletterForm";
 
 export default function HomePage() {
   const featuredProducts = products.slice(0, 18);
@@ -320,6 +322,16 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Testimonials Section */}
+      <Testimonials />
+
+      {/* NewsletterForm Section */}
+      <div className="bg-slate-900 py-16 mt-0">
+        <div className="container mx-auto px-4">
+          <NewsletterForm />
+        </div>
+      </div>
     </div>
   );
 }
